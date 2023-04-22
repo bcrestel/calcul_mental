@@ -11,26 +11,26 @@ def get_numbers(step):
     np.random.seed(int(time.time()))
     return np.random.randint(0, 10, 20, dtype=int).reshape((-1, 2))
 
-#if "data" not in st.session_state:
-#    cols = ["a", "b", "reponse", "solution"]
-#    st.session_state.data = pd.DataFrame(columns=cols)
-if "idx" not in st.session_state:
-    st.session_state.idx = 0
-
 numbers = get_numbers(0)
-a, b = numbers[st.session_state.idx]
-st.write(f"idx={st.session_state.idx}, a={a}, b={b}")
-
-st.write(f"{a} x {b} = ")
-reponse = st.text_input("Reponse")
+responses = []
+for ii in range(3):
+    a, b = numbers[ii]
+    c1, c2, _ = st.columns([1, 2, 7])
+    with c1:
+        st.write("##")
+        st.write(f"{a} x {b} = ", key=f"write_{ii}")
+    with c2:
+        responses.append(st.text_input("Reponse", key=f"reponse_{ii}"))
 
 run = st.button('Submit')
 
 if run:
-    st.write(f"idx={st.session_state.idx}, a={a}, b={b}, reponse={reponse}")
-    #st.session_state.data.loc[st.session_state.idx] = [a, b, reponse, a*b]
-    st.session_state.idx += 1
-    a, b = numbers[st.session_state.idx]
-    st.write(f"idx={st.session_state.idx}, a={a}, b={b}")
-
-#st.dataframe(st.session_state.data)
+    df = pd.DataFrame({
+        "question": range(3),
+        "a": numbers[:3,0],
+        "b": numbers[:3,1],
+        "reponse": responses,
+        "solution": numbers.prod(axis=1)[:3],
+    })
+    st.dataframe(df)
+    st.write(responses)

@@ -81,6 +81,11 @@ tests: build
 	$(info ***** Running all unit tests *****)
 	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "python -m pytest -v --rootdir=$(TEST_FOLDER)"
 
+.PHONY : show_users
+show_users: build
+	$(info ***** Running all unit tests *****)
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "python src/users.py"
+
 #
 # Formatting
 #

@@ -24,3 +24,6 @@ class Users:
             self.users.append(user.lower())
         write_to_pickle(self.users, self.filename)
 
+if __name__ == "__main__":
+    all_users = Users()
+    print(f"all_users in {all_users.filename}: {all_users.users}")

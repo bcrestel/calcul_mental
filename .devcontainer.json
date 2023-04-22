@@ -1,5 +1,5 @@
 {
-    "image": "IMAGE_NAME:IMAGE_TAG",
+    "image": "calcul_mental:1.0",
     "customizations": {
         "vscode": {
             "extensions": ["microsoft.python"]

@@ -1,6 +1,6 @@
 ###################
 # PARAMETERS TO MODIFY
-IMAGE_NAME = image_name
+IMAGE_NAME = calcul_mental
 IMAGE_TAG = 1.0
 ###################
 # FIXED PARAMETERS
@@ -63,10 +63,15 @@ notebook: build
 	$(info ***** Starting a notebook *****)
 	$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter lab --ip=$(hostname -I) --no-browser --allow-root"
 
-.PHONY : notebook
+.PHONY : mlflow_server
 mlflow_server: build
 	$(info ***** Starting the mlflow server *****)
 	$(DOCKER_RUN) -p 5000:5000 $(DOCKER_IMAGE) -c "mlflow server -h 0.0.0.0"
+
+.PHONY : app
+app: build
+	$(info ***** Starting gradio app *****)
+	$(DOCKER_RUN) -p 8080:8080 $(DOCKER_IMAGE) -c "python src/hello_world.py"
 
 #
 # Testing

@@ -11,6 +11,9 @@ def get_numbers(step):
     np.random.seed(int(time.time()))
     return np.random.randint(0, 10, 20, dtype=int).reshape((-1, 2))
 
+st.sidebar.selectbox("Name", ["An", "Op", "Ar"])
+st.sidebar.slider("Max value", 0, 10)
+
 numbers = get_numbers(0)
 responses = []
 for ii in range(3):

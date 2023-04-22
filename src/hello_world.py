@@ -1,12 +1,8 @@
 # hello_world.py.py
 # Benjamin Crestel, 2020-07-01
 
-import gradio as gr
+import streamlit as st
 
-def greet(name):
-    return "Hello " + name + "!"
-
-demo = gr.Interface(fn=greet, inputs="text", outputs="text")
-    
-if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=8080)   
+x = st.slider("Select a value")
+st.write(x, "squared is", x * x)
+st.write(x, "cubed is", x * x * x)

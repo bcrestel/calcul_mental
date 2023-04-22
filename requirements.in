@@ -3,7 +3,7 @@ scipy
 pandas>=1.0.0
 ipython
 
-gradio
+streamlit
 black
 isort
 pytest

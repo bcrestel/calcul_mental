@@ -4,6 +4,7 @@ import logging
 from src.users import Users
 from src.constants import map_sym_text_op
 from src.summary_file import SummaryFile
+from src.result_file import ResultFile
 from src.quiz_runner import quiz_runner
 
 # TODO: Change to logging.ERROR when done implementing
@@ -51,21 +52,29 @@ def main():
     nb_questions = int(input("Combien de questions veux-tu faire aujourd'hui? "))
     summaryfile_session = summaryfile.sample_rows(nb_samples=nb_questions)
     logger.debug(summaryfile_session)
+    logger.debug(summaryfile.df.loc[summaryfile_session.index])
 
     # Run the quiz
     _ = input("Es-tu prêt(e)? Appuie sur 'RETURN' quand tu veux démarrer.\n")
-    answers = quiz_runner(
+    answers, time_spent = quiz_runner(
         first_numbers=summaryfile_session["a"].tolist(),
         second_numbers=summaryfile_session["b"].tolist(),
         operation=summaryfile_session["op"].unique().item()
     )
+
+    # Process results
     summaryfile_session["answers"] = answers
     logger.debug(summaryfile_session)
-    summaryfile.update_from_answers(summaryfile_session=summaryfile_session)
+    result_file = ResultFile(
+        user_name=user_name,
+        result_table=summaryfile_session,
+        total_time_spent=time_spent,
+    )
+    result_file.analyze_results()
 
-    # TODO: add summary of that run (results)
-    # TODO: log results
-    # Update log file
+    # Log all files and results
+    summaryfile.update_from_answers(result_table=result_file.result_table)
+    result_file.update_logfile()
 
 
 if __name__ == "__main__":

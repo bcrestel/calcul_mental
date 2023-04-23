@@ -60,16 +60,19 @@ class ResultFile:
         total_len = len(self.result_table)
         nb_correct = self.result_table["success"].sum()
         nb_failure = self.result_table["failure"].sum()
+        time_per_op = self.result_table["time_spent_per_op"].unique().item()
+        print("\nBravo, tu as terminé. Place aux résultats!")
+        print(f"Tu as passé {time_per_op:.1f} secondes par question.")
         print(f"Sur les {total_len} questions demandées, " + \
-              f"tu en as eu {nb_correct} de correct et tu as eu {nb_failure} erreurs.")
-        print("Voici ceux que tu as besoin de travailler:")
-        df_tmp = self.result_table.query("failure==1")
-        print(
-            (df_tmp["a"].astype(str) + \
-            " " + df_tmp["op"] + " " + df_tmp["b"].astype(str) + \
-            " = " + df_tmp["result"].astype(str) + " (ta réponse: " + \
-            df_tmp["answers"].astype(str) + ")").to_string(index=False)
-        )
+              f"tu as eu {nb_correct} bonnes réponses (BRAVO!!), et tu as eu {nb_failure} erreur(s).")
+        if nb_failure > 0:
+            print("Voici les questions que tu as besoin de travailler:")
+            df_tmp = self.result_table.query("failure==1")
+            print(
+                (df_tmp["a"].astype(str) + " " + df_tmp["op"] + " " + df_tmp["b"].astype(str) + " = " +
+                 df_tmp["result"].astype(str) + " (ta réponse: " + df_tmp["answers"].astype(str) +
+                 ")").to_string(index=False)
+            )
 
     def update_logfile(self):
         self._load_log_file()

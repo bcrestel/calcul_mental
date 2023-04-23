@@ -7,7 +7,6 @@ from src.summary_file import SummaryFile
 from src.result_file import ResultFile
 from src.quiz_runner import quiz_runner
 
-# TODO: Change to logging.ERROR when done implementing
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ def main():
             sys.exit()
 
     # Operations
-    operation_sym = input("Quelle opération veux-tu travailler aujourd'hui? [*,+,-,/] ")
+    operation_sym = input("\nQuelle opération veux-tu travailler aujourd'hui? [*,+,-,/] ")
     if operation_sym not in map_sym_text_op.keys():
         print("Je ne comprends pas cette opération. Bye!")
         sys.exit()
@@ -42,7 +41,7 @@ def main():
     summaryfile = SummaryFile(user_name=user_name, operation_type=operation_type)
 
     # Masking
-    min_b = int(input("Quelle est la plus PETITE table que tu veux travailler? "))
+    min_b = int(input("\nQuelle est la plus PETITE table que tu veux travailler? "))
     max_b = int(input("Quelle est la plus GRANDE table que tu veux travailler? "))
     if min_b > max_b:
         raise ValueError(f"La plus petite table est plus grande que la plus grande ")

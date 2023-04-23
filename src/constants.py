@@ -16,3 +16,5 @@ map_sym_text_op = {
     "-": Operation.soustraction,
     "/": Operation.division,
 }
+
+factor_change_in_weights = 1.5

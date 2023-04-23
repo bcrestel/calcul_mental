@@ -4,11 +4,15 @@ import logging
 from src.users import Users
 from src.constants import map_sym_text_op
 from src.summary_file import SummaryFile
+from src.quiz_runner import quiz_runner
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
+# TODO: Change to logging.ERROR when done implementing
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
 logger = logging.getLogger(__name__)
 
-if __name__ == "__main__":
+
+def main():
+    # TODO: integrate within Users
     # Check for existing user and if not create new profile
     all_users = Users()
     logger.debug(f"all_users={all_users.users}")
@@ -45,8 +49,24 @@ if __name__ == "__main__":
 
     # Sample questions
     nb_questions = int(input("Combien de questions veux-tu faire aujourd'hui? "))
-    summaryfile.sample_rows(nb_samples=nb_questions)
-    print(summaryfile.df_sampled)
+    summaryfile_session = summaryfile.sample_rows(nb_samples=nb_questions)
+    logger.debug(summaryfile_session)
+
+    # Run the quiz
+    _ = input("Es-tu prêt(e)? Appuie sur 'RETURN' quand tu veux démarrer.\n")
+    answers = quiz_runner(
+        first_numbers=summaryfile_session["a"].tolist(),
+        second_numbers=summaryfile_session["b"].tolist(),
+        operation=summaryfile_session["op"].unique().item()
+    )
+    summaryfile_session["answers"] = answers
+    logger.debug(summaryfile_session)
+    summaryfile.update_from_answers(summaryfile_session=summaryfile_session)
+
+    # TODO: add summary of that run (results)
+    # TODO: log results
+    # Update log file
 
 
-
+if __name__ == "__main__":
+    main()

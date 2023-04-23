@@ -5,14 +5,14 @@ from src.users import Users
 from src.constants import map_sym_text_op
 from src.summary_file import SummaryFile
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     # Check for existing user and if not create new profile
     all_users = Users()
     logger.debug(f"all_users={all_users.users}")
-    user_name = input("Quel est ton prénom? ")
+    user_name = input("Quel est ton prénom? ").lower()
     logger.debug(f"user_name={user_name}")
     if not all_users.does_user_exist(user_name):
         print(f"On dirait que c'est la première fois que tu te connectes, {user_name}.")
@@ -35,5 +35,18 @@ if __name__ == "__main__":
 
     # Obtain summary file
     summaryfile = SummaryFile(user_name=user_name, operation_type=operation_type)
+
+    # Masking
+    min_b = int(input("Quelle est la plus PETITE table que tu veux travailler? "))
+    max_b = int(input("Quelle est la plus GRANDE table que tu veux travailler? "))
+    if min_b > max_b:
+        raise ValueError(f"La plus petite table est plus grande que la plus grande ")
+    summaryfile.create_mask(min_b=min_b, max_b=max_b)
+
+    # Sample questions
+    nb_questions = int(input("Combien de questions veux-tu faire aujourd'hui? "))
+    summaryfile.sample_rows(nb_samples=nb_questions)
+    print(summaryfile.df_sampled)
+
 
 

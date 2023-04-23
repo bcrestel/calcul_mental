@@ -6,6 +6,7 @@ from src.io.pickle_io import read_from_pickle, write_to_pickle
 
 logger = logging.getLogger(__name__)
 
+# TODO: add passwords
 class Users:
     def __init__(self, filename: Path = "users.pickle"):
         self.filename = Path(file_path, filename)

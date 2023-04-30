@@ -34,23 +34,27 @@ class SummaryFile:
 
     @staticmethod
     def _create_file(operation_type: Operation, file_name: Path):
-        if operation_type != Operation.division:
-            a = (np.ones((12, 1)) * np.linspace(1, 12, 12)).flatten()
-            b = (np.linspace(1, 12, 12, dtype=int).reshape((12, 1)) * np.ones(12)).flatten()
-            df = pd.DataFrame({"a": a, "b": b}, dtype=int)
-            if operation_type == Operation.addition:
-                df["result"] = df["a"] + df["b"]
-            elif operation_type == Operation.soustraction:
-                df["result"] = df["a"] - df["b"]
-            elif operation_type == Operation.multiplication:
-                df["result"] = df["a"] * df["b"]
-        elif operation_type == Operation.division:
-            a = (np.linspace(1, 12, 12, dtype=int).reshape((12, 1)) * np.ones(12)).flatten()
-            b = (np.ones((12, 1)) * np.linspace(1, 12, 12)).flatten()
+        onetwothree = (np.ones((12, 1)) * np.linspace(1, 12, 12)).flatten()
+        tables_int = (np.linspace(1, 12, 12, dtype=int).reshape((12, 1)) * np.ones(12)).flatten()
+        if operation_type == Operation.addition:
+            a = onetwothree
+            b = tables_int
+            result = a + b
+        elif operation_type == Operation.soustraction:
+            a = onetwothree + tables_int
+            b = tables_int
+            result = onetwothree
+        elif operation_type == Operation.multiplication:
+            a = onetwothree
+            b = tables_int
             result = a * b
-            df = pd.DataFrame({"a": result, "b": a, "result": b}, dtype=int)
+        elif operation_type == Operation.division:
+            a = onetwothree * tables_int
+            b = tables_int
+            result = onetwothree
         else:
             raise NotImplementedError(f"operation_type {operation_type} not defined")
+        df = pd.DataFrame({"a": a, "b": b, "result": result}, dtype=int)
         df = df.query("result >= 0").copy(deep=True)
         df["op"] = operation_type.value
         df["success"] = 0

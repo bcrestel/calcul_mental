@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from src.users import Users
+from src.users.users import Users
 from src.constants import map_sym_text_op
 from src.summary_file import SummaryFile
 from src.result_file import ResultFile

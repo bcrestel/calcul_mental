@@ -40,7 +40,7 @@ upgrade:
 .PHONY : run
 run: build
 	$(info ***** Running *****)
-	$(DOCKER_RUN) $(DOCKER_IMAGE)  -c "python src/main.py"
+	$(DOCKER_RUN) $(DOCKER_IMAGE)  -c "python src/backend/main.py"
 
 .PHONY : shell
 shell: build
@@ -65,8 +65,8 @@ mlflow_server: build
 .PHONY : app
 app: build
 	$(info ***** Starting gradio app *****)
-	#$(DOCKER_RUN) -p 8501:8501 $(DOCKER_IMAGE) -c "streamlit run src/hello_world.py --server.port=8501 --server.address=0.0.0.0"
-	$(DOCKER_RUN) -p 8501:8501 $(DOCKER_IMAGE) -c "streamlit run src/test_streamlit.py --server.port=8501 --server.address=0.0.0.0"
+	#$(DOCKER_RUN) -p 8501:8501 $(DOCKER_IMAGE) -c "streamlit run src/frontend/hello_world.py --server.port=8501 --server.address=0.0.0.0"
+	$(DOCKER_RUN) -p 8501:8501 $(DOCKER_IMAGE) -c "streamlit run src/frontend/test_streamlit.py --server.port=8501 --server.address=0.0.0.0"
 
 #
 # Testing

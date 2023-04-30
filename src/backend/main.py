@@ -2,10 +2,10 @@ import sys
 import logging
 
 from src.users.users import Users
-from src.constants import map_sym_text_op
-from src.summary_file import SummaryFile
-from src.result_file import ResultFile
-from src.quiz_runner import quiz_runner
+from src.utils.constants import map_sym_text_op
+from src.backend.summary_file import SummaryFile
+from src.backend.result_file import ResultFile
+from src.backend.quiz_runner import quiz_runner
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
 logger = logging.getLogger(__name__)

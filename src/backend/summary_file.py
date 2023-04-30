@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from src.constants import Operation, file_path, factor_change_in_weights
+from src.utils.constants import Operation, file_path, factor_change_in_weights
 
 logger = logging.getLogger(__name__)
 

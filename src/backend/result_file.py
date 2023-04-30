@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.constants import Operation, file_path, map_sym_text_op
+from src.utils.constants import file_path, map_sym_text_op
 
 logger = logging.getLogger(__name__)
 COLS = ["a", "op", "b", "answers", "result", "success", "failure",

@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from src.constants import file_path
+from src.utils.constants import file_path
 from src.io.pickle_io import read_from_pickle, write_to_pickle
 
 logger = logging.getLogger(__name__)

@@ -3,15 +3,17 @@ import logging
 
 from src.users.users import Users
 from src.utils.constants import map_sym_text_op
-from src.backend.summary_file import SummaryFile
 from src.backend.result_file import ResultFile
 from src.backend.quiz_runner import quiz_runner
+from src.backend.get_summary_files import get_summary_files
 
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
 logger = logging.getLogger(__name__)
 
 
 def main():
+    # Get input parameters
+
     # TODO: integrate within Users
     # Check for existing user and if not create new profile
     all_users = Users()
@@ -27,7 +29,6 @@ def main():
         else:
             print("Bye!")
             sys.exit()
-
     # Operations
     operation_sym = input("\nQuelle opération veux-tu travailler aujourd'hui? [*,+,-,/] ")
     if operation_sym not in map_sym_text_op.keys():
@@ -36,22 +37,21 @@ def main():
     operation_type = map_sym_text_op[operation_sym]
     print(f"C'est bien compris. On va travailler l'opération: {operation_type.name}")
     logger.debug(f"Operation type: {operation_type}")
-
-    # Obtain summary file
-    summaryfile = SummaryFile(user_name=user_name, operation_type=operation_type)
-
     # Masking
     min_b = int(input("\nQuelle est la plus PETITE table que tu veux travailler? "))
     max_b = int(input("Quelle est la plus GRANDE table que tu veux travailler? "))
     if min_b > max_b:
         raise ValueError(f"La plus petite table est plus grande que la plus grande ")
-    summaryfile.create_mask(min_b=min_b, max_b=max_b)
-
     # Sample questions
     nb_questions = int(input("Combien de questions veux-tu faire aujourd'hui? "))
-    summaryfile_session = summaryfile.sample_rows(nb_samples=nb_questions)
-    logger.debug(summaryfile_session)
-    logger.debug(summaryfile.df.loc[summaryfile_session.index])
+
+    summaryfile, summaryfile_session = get_summary_files(
+        user_name=user_name,
+        operation_type=operation_type,
+        min_b=min_b,
+        max_b=max_b,
+        nb_questions=nb_questions,
+    )
 
     # Run the quiz
     _ = input("Es-tu prêt(e)? Appuie sur 'RETURN' quand tu veux démarrer.\n")
@@ -69,7 +69,7 @@ def main():
         result_table=summaryfile_session,
         total_time_spent=time_spent,
     )
-    result_file.analyze_results()
+    print(result_file.analyze_results())
 
     # Log all files and results
     summaryfile.update_from_answers(result_table=result_file.result_table)

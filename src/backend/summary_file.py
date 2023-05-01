@@ -83,7 +83,7 @@ class SummaryFile:
 
     @staticmethod
     def _calculate_weights(df_failure: pd.Series, df_success: pd.Series) -> pd.Series:
-        return 1.0 * (factor_change_in_weights ** (df_failure - df_success))
+        return 1.0 * (factor_change_in_weights ** (df_failure - df_success)).clip(lower=0.2)
 
     def _calculate_weights_from_success_failure(self):
         self.df["weights"] = self._calculate_weights(

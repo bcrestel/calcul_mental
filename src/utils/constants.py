@@ -17,4 +17,4 @@ map_sym_text_op = {
     "/": Operation.division,
 }
 
-factor_change_in_weights = 1.5
+factor_change_in_weights = 2.0

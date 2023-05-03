@@ -39,10 +39,12 @@ class ResultFile:
         self.result_table.loc[
             self.result_table["answers"] == self.result_table["result"], "success"
         ] = 1
+        self.nb_correct = self.result_table["success"].sum()
         self.result_table["failure"] = 0
         self.result_table.loc[
             self.result_table["answers"] != self.result_table["result"], "failure"
         ] = 1
+        self.nb_failure = self.result_table["failure"].sum()
         # Process time
         self.result_table["total_time_spent"] = self.total_time_spent
         self.result_table["time_spent_per_op"] = self.total_time_spent / len(self.result_table)
@@ -58,14 +60,12 @@ class ResultFile:
 
     def analyze_results(self) -> str:
         total_len = len(self.result_table)
-        nb_correct = self.result_table["success"].sum()
-        nb_failure = self.result_table["failure"].sum()
         time_per_op = self.result_table["time_spent_per_op"].unique().item()
         output_text = "Bravo, tu as terminé. Place aux résultats!\n"
         output_text += f"Tu as passé {time_per_op:.1f} secondes par question.\n"
         output_text += (f"Sur les {total_len} questions demandées, " + \
-              f"tu as eu {nb_correct} bonnes réponses (BRAVO!!), et tu as eu {nb_failure} erreur(s).\n")
-        if nb_failure > 0:
+              f"tu as eu {self.nb_correct} bonnes réponses (BRAVO!!), et tu as eu {self.nb_failure} erreur(s).\n")
+        if self.nb_failure > 0:
             output_text += "Voici les questions que tu as besoin de travailler:\n"
             df_tmp = self.result_table.query("failure==1")
             output_text += \

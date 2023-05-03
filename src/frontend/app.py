@@ -25,6 +25,8 @@ if "show_quizz" not in st.session_state:
     st.session_state.summaryfile_session = None
     st.session_state.result_file = None
     st.session_state.t0 = None
+    st.session_state.t1 = None
+    st.session_state.celebration = False
 
 def show_quizz():
     questions = quiz_generator(st.session_state.summaryfile_session)
@@ -41,7 +43,7 @@ def show_quizz():
             answers.append(st.text_input("Réponse", key=f"reponse_{idx}"))
 
     if st.button("J'ai fini!"):
-        if "t1" not in st.session_state:
+        if st.session_state.t1 is None:
             st.session_state.t1 = time.time()
             st.session_state.time_spent = st.session_state.t1 - st.session_state.t0
         assert len(answers) == len(st.session_state.summaryfile_session)
@@ -52,6 +54,8 @@ def show_quizz():
             total_time_spent=st.session_state.time_spent,
         )
         st.session_state.result_file = result_file
+        if result_file.nb_failure == 0:
+            st.session_state.celebration = True
         # Log results
         st.session_state.summaryfile.update_from_answers(result_table=st.session_state.result_file.result_table)
         st.session_state.result_file.update_logfile()
@@ -63,6 +67,7 @@ if st.sidebar.button("Démarrer"):
     # reset a few keys in session_state
     st.session_state.result_file = None
     st.session_state.t0 = None
+    st.session_state.t1 = None
     summaryfile, summaryfile_session = get_summary_files(
         user_name=user_name,
         operation_type=operation_type,
@@ -79,7 +84,9 @@ if st.session_state.show_quizz:
     #st.dataframe(st.session_state.summaryfile_session)
 
 if st.session_state.result_file is not None:
-    st.balloons()
+    if st.session_state.celebration:
+        st.balloons()
+        st.session_state.celebration = False
     text = st.session_state.result_file.analyze_results()
     for tt in text.split("\n"):
         st.sidebar.write(tt)

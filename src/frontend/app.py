@@ -38,7 +38,7 @@ def show_quizz():
         c1, c2, _ = st.columns([1, 2, 7])
         with c1:
             st.write("##")
-            st.write(quest, key=f"write_{idx}")
+            st.write(quest)
         with c2:
             answers.append(st.text_input("Réponse", key=f"reponse_{idx}"))
 

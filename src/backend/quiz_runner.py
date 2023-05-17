@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 def quiz_runner(
-        first_numbers: List[int],
-        second_numbers: List[int],
-        operation: str,
+    first_numbers: List[int],
+    second_numbers: List[int],
+    operation: str,
 ) -> List[int]:
     logger.debug(first_numbers)
     logger.debug(second_numbers)

@@ -1,12 +1,13 @@
-from pathlib import Path
 import logging
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from src.utils.constants import Operation, file_path, factor_change_in_weights
+from src.utils.constants import Operation, factor_change_in_weights, file_path
 
 logger = logging.getLogger(__name__)
+
 
 class SummaryFile:
     def __init__(self, user_name: str, operation_type: Operation):
@@ -35,7 +36,9 @@ class SummaryFile:
     @staticmethod
     def _create_file(operation_type: Operation, file_name: Path):
         onetwothree = (np.ones((12, 1)) * np.linspace(1, 12, 12)).flatten()
-        tables_int = (np.linspace(1, 12, 12, dtype=int).reshape((12, 1)) * np.ones(12)).flatten()
+        tables_int = (
+            np.linspace(1, 12, 12, dtype=int).reshape((12, 1)) * np.ones(12)
+        ).flatten()
         if operation_type == Operation.addition:
             a = onetwothree
             b = tables_int
@@ -72,18 +75,17 @@ class SummaryFile:
         self.df.loc[self.df["b"] > max_b, "mask"] = 0.0
 
     def sample_rows(self, nb_samples: int) -> pd.DataFrame:
-        df = self.df.assign(weights_mask=self.df["weights"]*self.df["mask"])
+        df = self.df.assign(weights_mask=self.df["weights"] * self.df["mask"])
         cols = ["a", "op", "b", "result", "weights", "mask", "weights_mask"]
-        return df.sample(
-            n=nb_samples,
-            replace=False,
-            weights="weights_mask",
-            axis=0
-        )[cols]
+        return df.sample(n=nb_samples, replace=False, weights="weights_mask", axis=0)[
+            cols
+        ]
 
     @staticmethod
     def _calculate_weights(df_failure: pd.Series, df_success: pd.Series) -> pd.Series:
-        return 1.0 * (factor_change_in_weights ** (df_failure - df_success)).clip(lower=0.2)
+        return 1.0 * (factor_change_in_weights ** (df_failure - df_success)).clip(
+            lower=0.2
+        )
 
     def _calculate_weights_from_success_failure(self):
         self.df["weights"] = self._calculate_weights(
@@ -94,16 +96,18 @@ class SummaryFile:
     def update_from_answers(self, result_table: pd.DataFrame):
         # update good answers
         idx_good_answers = result_table.query("success==1").index
-        self.df.loc[idx_good_answers, "success"] =+ 1
+        self.df.loc[idx_good_answers, "success"] = +1
         logger.debug(f"idx_good_answers={idx_good_answers}")
         # update bad answers
         idx_bad_answers = result_table.query("failure==1").index
-        self.df.loc[idx_bad_answers, "failure"] =+ 1
+        self.df.loc[idx_bad_answers, "failure"] = +1
         logger.debug(f"idx_bad_answers={idx_bad_answers}")
 
         assert len(idx_good_answers) + len(idx_bad_answers) == len(result_table)
 
         self._calculate_weights_from_success_failure()
-        logger.debug(f"self.df.loc[summaryfile_session.index]=\n{self.df.loc[result_table.index]}")
+        logger.debug(
+            f"self.df.loc[summaryfile_session.index]=\n{self.df.loc[result_table.index]}"
+        )
 
         self._save_summary_file()

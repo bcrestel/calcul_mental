@@ -1,14 +1,18 @@
-import streamlit as st
 import logging
 import time
 
-from src.users.users import Users
-from src.utils.constants import map_sym_text_op
+import streamlit as st
+
 from src.backend.get_summary_files import get_summary_files
 from src.backend.result_file import ResultFile
 from src.frontend.quiz_generator import quiz_generator
+from src.users.users import Users
+from src.utils.constants import map_sym_text_op
 
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 # Define the sidebar
@@ -27,6 +31,7 @@ if "show_quizz" not in st.session_state:
     st.session_state.t0 = None
     st.session_state.t1 = None
     st.session_state.celebration = False
+
 
 def show_quizz():
     questions = quiz_generator(st.session_state.summaryfile_session)
@@ -57,11 +62,14 @@ def show_quizz():
         if result_file.nb_failure == 0:
             st.session_state.celebration = True
         # Log results
-        st.session_state.summaryfile.update_from_answers(result_table=st.session_state.result_file.result_table)
+        st.session_state.summaryfile.update_from_answers(
+            result_table=st.session_state.result_file.result_table
+        )
         st.session_state.result_file.update_logfile()
 
         st.session_state.show_quizz = False
         st.experimental_rerun()
+
 
 if st.sidebar.button("Démarrer"):
     # reset a few keys in session_state
@@ -81,7 +89,7 @@ if st.sidebar.button("Démarrer"):
 
 if st.session_state.show_quizz:
     show_quizz()
-    #st.dataframe(st.session_state.summaryfile_session)
+    # st.dataframe(st.session_state.summaryfile_session)
 
 if st.session_state.result_file is not None:
     if st.session_state.celebration:
@@ -90,4 +98,3 @@ if st.session_state.result_file is not None:
     text = st.session_state.result_file.analyze_results()
     for tt in text.split("\n"):
         st.sidebar.write(tt)
-

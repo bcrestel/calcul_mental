@@ -1,7 +1,8 @@
 import pickle
 
+
 def read_from_pickle(file_name):
-    with open(file_name, 'rb') as f:
+    with open(file_name, "rb") as f:
         return pickle.load(f)
 
 

@@ -1,13 +1,16 @@
-import sys
 import logging
+import sys
 
+from src.backend.get_summary_files import get_summary_files
+from src.backend.quiz_runner import quiz_runner
+from src.backend.result_file import ResultFile
 from src.users.users import Users
 from src.utils.constants import map_sym_text_op
-from src.backend.result_file import ResultFile
-from src.backend.quiz_runner import quiz_runner
-from src.backend.get_summary_files import get_summary_files
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s')
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s %(filename)s--l.%(lineno)d: %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +33,9 @@ def main():
             print("Bye!")
             sys.exit()
     # Operations
-    operation_sym = input("\nQuelle opération veux-tu travailler aujourd'hui? [*,+,-,/] ")
+    operation_sym = input(
+        "\nQuelle opération veux-tu travailler aujourd'hui? [*,+,-,/] "
+    )
     if operation_sym not in map_sym_text_op.keys():
         print("Je ne comprends pas cette opération. Bye!")
         sys.exit()
@@ -58,7 +63,7 @@ def main():
     answers, time_spent = quiz_runner(
         first_numbers=summaryfile_session["a"].tolist(),
         second_numbers=summaryfile_session["b"].tolist(),
-        operation=summaryfile_session["op"].unique().item()
+        operation=summaryfile_session["op"].unique().item(),
     )
 
     # Process results

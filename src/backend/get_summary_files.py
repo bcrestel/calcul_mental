@@ -1,5 +1,5 @@
-from typing import Tuple
 import logging
+from typing import Tuple
 
 import pandas as pd
 
@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_summary_files(
-        user_name: str, 
-        operation_type: Operation,
-        min_b: int,
-        max_b: int,
-        nb_questions: int,
+    user_name: str,
+    operation_type: Operation,
+    min_b: int,
+    max_b: int,
+    nb_questions: int,
 ) -> Tuple[SummaryFile, pd.DataFrame]:
     summaryfile = SummaryFile(user_name=user_name, operation_type=operation_type)
     summaryfile.create_mask(min_b=min_b, max_b=max_b)

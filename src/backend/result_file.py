@@ -6,17 +6,29 @@ import pandas as pd
 from src.utils.constants import file_path, map_sym_text_op
 
 logger = logging.getLogger(__name__)
-COLS = ["a", "op", "b", "answers", "result", "success", "failure",
-        "session_datetime", "weights", "mask", "weights_mask",
-        "total_time_spent", "time_spent_per_op"]
+COLS = [
+    "a",
+    "op",
+    "b",
+    "answers",
+    "result",
+    "success",
+    "failure",
+    "session_datetime",
+    "weights",
+    "mask",
+    "weights_mask",
+    "total_time_spent",
+    "time_spent_per_op",
+]
 
 
 class ResultFile:
     def __init__(
-            self,
-            user_name: str,
-            result_table: pd.DataFrame,
-            total_time_spent: float,
+        self,
+        user_name: str,
+        result_table: pd.DataFrame,
+        total_time_spent: float,
     ):
         self.user_name = user_name
         self.result_table = result_table
@@ -26,10 +38,14 @@ class ResultFile:
     def _process_result_file(self):
         # add timestamp
         if "answers" not in self.result_table.columns:
-            logger.error(f"Could not find column 'answer' in input Dataframe. " + \
-                         f"Only found: {self.result_table.columns}")
+            logger.error(
+                f"Could not find column 'answer' in input Dataframe. "
+                + f"Only found: {self.result_table.columns}"
+            )
             raise ValueError
-        self.result_table["session_datetime"] = pd.Timestamp.utcnow().tz_convert("US/Eastern")
+        self.result_table["session_datetime"] = pd.Timestamp.utcnow().tz_convert(
+            "US/Eastern"
+        )
         # Extract operation
         op = self.result_table["op"].unique().item()
         self.operation_type = map_sym_text_op[op]
@@ -47,7 +63,9 @@ class ResultFile:
         self.nb_failure = self.result_table["failure"].sum()
         # Process time
         self.result_table["total_time_spent"] = self.total_time_spent
-        self.result_table["time_spent_per_op"] = self.total_time_spent / len(self.result_table)
+        self.result_table["time_spent_per_op"] = self.total_time_spent / len(
+            self.result_table
+        )
         # Check result_file
         check_COLS = all([col in self.result_table.columns for col in COLS])
         if not check_COLS:
@@ -56,33 +74,48 @@ class ResultFile:
 
     @property
     def log_filename(self) -> Path:
-        return Path(file_path, f"log_{self.user_name}_{self.operation_type.name}.parquet")
+        return Path(
+            file_path, f"log_{self.user_name}_{self.operation_type.name}.parquet"
+        )
 
     def analyze_results(self) -> str:
         total_len = len(self.result_table)
         time_per_op = self.result_table["time_spent_per_op"].unique().item()
         output_text = "Bravo, tu as terminé. Place aux résultats!\n"
         output_text += f"Tu as passé {time_per_op:.1f} secondes par question.\n"
-        output_text += (f"Sur les {total_len} questions demandées, " + \
-              f"tu as eu {self.nb_correct} bonnes réponses (BRAVO!!), et tu as eu {self.nb_failure} erreur(s).\n")
+        output_text += (
+            f"Sur les {total_len} questions demandées, "
+            + f"tu as eu {self.nb_correct} bonnes réponses (BRAVO!!), et tu as eu {self.nb_failure} erreur(s).\n"
+        )
         if self.nb_failure > 0:
             output_text += "Voici les questions que tu as besoin de travailler:\n"
             df_tmp = self.result_table.query("failure==1")
-            output_text += \
-                (df_tmp["a"].astype(str) + " " + df_tmp["op"] + " " + df_tmp["b"].astype(str) + " = " +
-                 df_tmp["result"].astype(str) + " (ta réponse: " + df_tmp["answers"].astype(str) +
-                 ")").to_string(index=False)
+            output_text += (
+                df_tmp["a"].astype(str)
+                + " "
+                + df_tmp["op"]
+                + " "
+                + df_tmp["b"].astype(str)
+                + " = "
+                + df_tmp["result"].astype(str)
+                + " (ta réponse: "
+                + df_tmp["answers"].astype(str)
+                + ")"
+            ).to_string(index=False)
         return output_text
 
     def update_logfile(self):
         self._load_log_file()
-        self.log_file = pd.concat([self.log_file[COLS], self.result_table[COLS]], axis=0)
+        self.log_file = pd.concat(
+            [self.log_file[COLS], self.result_table[COLS]], axis=0
+        )
         self._save_log_file()
 
     def _load_log_file(self):
         if not self.log_filename.exists():
-            logger.warning(f"Could not find {self.log_filename}. " + \
-                           "Creating an empty DataFrame.")
+            logger.warning(
+                f"Could not find {self.log_filename}. " + "Creating an empty DataFrame."
+            )
             self.log_file = pd.DataFrame(columns=COLS)
         else:
             logger.info(f"Loading {self.log_filename}")
@@ -91,4 +124,3 @@ class ResultFile:
     def _save_log_file(self):
         logger.info(f"Writing self.log_file to {self.log_filename}")
         self.log_file.to_parquet(self.log_filename)
-

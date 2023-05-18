@@ -33,6 +33,7 @@ class ResultFile:
         self.user_name = user_name
         self.result_table = result_table
         self.total_time_spent = total_time_spent
+        self.log_file = None
         self._process_result_file()
 
     def _process_result_file(self):
@@ -124,3 +125,17 @@ class ResultFile:
     def _save_log_file(self):
         logger.info(f"Writing self.log_file to {self.log_filename}")
         self.log_file.to_parquet(self.log_filename)
+
+    def calculate_score(self) -> pd.DataFrame:
+        if self.log_file is None:
+            return pd.DataFrame()
+        df_sums = self.log_file.groupby("session_datetime")[["success", "failure"]].sum()
+        df_sums["total"] = df_sums["success"] + df_sums["failure"]
+        df_sums["pct_success"] = df_sums["success"] / df_sums["total"]
+
+        df_last = self.log_file.groupby("session_datetime")["time_spent_per_op"].last().to_frame()
+        
+        df_res = df_last.join(df_sums[["pct_success"]], how="left")
+        df_res["score"] = 100.0 * df_res["pct_success"] / df_res["time_spent_per_op"]
+        df_res["index"] = range(1, len(df_res)+1)
+        return df_res.sort_index(ascending=True)

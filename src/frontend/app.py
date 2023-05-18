@@ -2,12 +2,13 @@ import logging
 import time
 
 import streamlit as st
+import plotly.express as px
 
 from src.backend.get_summary_files import get_summary_files
 from src.backend.result_file import ResultFile
 from src.frontend.quiz_generator import quiz_generator
 from src.users.users import Users
-from src.utils.constants import map_sym_text_op
+from src.utils.constants import map_sym_text_op, map_sym_2_text
 
 logging.basicConfig(
     level=logging.ERROR,
@@ -95,6 +96,22 @@ if st.session_state.result_file is not None:
     if st.session_state.celebration:
         st.balloons()
         st.session_state.celebration = False
+    # print summary text in sidebar
     text = st.session_state.result_file.analyze_results()
     for tt in text.split("\n"):
         st.sidebar.write(tt)
+    # plot past performance
+    df_res = st.session_state.result_file.calculate_score()
+    st.subheader(f"Ta performance sur {map_sym_2_text[operation_symbol]}")
+
+    cols = ["score", "time_spent_per_op", "pct_success"]
+    tab1, tab2, tab3 = st.tabs(cols)
+    with tab1:
+        fig = px.line(df_res, x="index", y=cols[0], height=500, width=1000)
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    with tab2:
+        fig = px.line(df_res, x="index", y=cols[1], height=500, width=1000)
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    with tab3:
+        fig = px.line(df_res, x="index", y=cols[2], height=500, width=1000)
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)

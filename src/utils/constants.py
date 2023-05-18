@@ -17,4 +17,12 @@ map_sym_text_op = {
     "/": Operation.division,
 }
 
+
+map_sym_2_text = {
+    "*": "la multiplication",
+    "+": "l'addition",
+    "-": "la soustraction",
+    "/": "la division"
+}
+
 factor_change_in_weights = 2.0

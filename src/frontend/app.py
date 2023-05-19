@@ -101,7 +101,12 @@ if st.session_state.result_file is not None:
     for tt in text.split("\n"):
         st.sidebar.write(tt)
     # plot past performance
-    df_res = st.session_state.result_file.calculate_score()
+    nb_questions_quizz = st.number_input("Nombre de questions au quizz", value=60)
+    max_min_quizz = st.number_input("Temps (min)", value=5)
+    df_res = st.session_state.result_file.calculate_score(
+        max_min=max_min_quizz,
+        nb_questions=nb_questions_quizz
+    )
     st.subheader(f"Ta performance sur {map_sym_2_text[operation_symbol]}")
 
     cols = ["score", "time_spent_per_op", "pct_success"]

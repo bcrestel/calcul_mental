@@ -126,7 +126,7 @@ class ResultFile:
         logger.info(f"Writing self.log_file to {self.log_filename}")
         self.log_file.to_parquet(self.log_filename)
 
-    def calculate_score(self) -> pd.DataFrame:
+    def calculate_score(self, max_min=5, nb_questions=60) -> pd.DataFrame:
         if self.log_file is None:
             return pd.DataFrame()
         df_sums = self.log_file.groupby("session_datetime")[["success", "failure"]].sum()
@@ -136,6 +136,6 @@ class ResultFile:
         df_last = self.log_file.groupby("session_datetime")["time_spent_per_op"].last().to_frame()
         
         df_res = df_last.join(df_sums[["pct_success"]], how="left")
-        df_res["score"] = 100.0 * df_res["pct_success"] / df_res["time_spent_per_op"]
+        df_res["score"] = (max_min*60/df_res["time_spent_per_op"]).clip(upper=nb_questions)*df_res["pct_success"] 
         df_res["index"] = range(1, len(df_res)+1)
         return df_res.sort_index(ascending=True)
